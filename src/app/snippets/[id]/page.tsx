@@ -41,3 +41,14 @@ export default async function SingleSnippet(props: SingleSnippetProps) {
         </pre>
     </div>
 }
+
+export async function generateStaticParams() {
+    const snippets = await db.snippet.findMany()
+
+    return snippets.map((snippet) => {
+        return {
+            id: snippet.id.toString() 
+        }
+    })
+    
+}

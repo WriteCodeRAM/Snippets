@@ -1,12 +1,13 @@
 'use server'
 import { db } from '@/db'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 
 
 export async function createSnippet(formState: {message: string}, formData : FormData) {
-   
+    console.log('in create snippet')
     try {
-
+        console.log('trying')
     
     // validate user input 
     const title = formData.get('title') as string
@@ -34,7 +35,10 @@ export async function createSnippet(formState: {message: string}, formData : For
     }
     )
 
+    console.log(title, code)
+
 } catch(err: unknown){
+
     if (err instanceof Error){
         return {
             message: err.message
@@ -46,6 +50,7 @@ export async function createSnippet(formState: {message: string}, formData : For
     }
 }
     //redirect user to the root route
+    revalidatePath('/')
     redirect('/')
 }
 
@@ -55,7 +60,7 @@ export async function editSnippet(id: number, code: string ) {
         where: { id }, 
         data: { code }
         })
-
+    revalidatePath(`/snippets/${id}`)
     redirect(`/snippets/${id}`)
     }
 
@@ -64,6 +69,6 @@ export async function deleteSnippet(id: number) {
     await db.snippet.delete({
         where: { id }
     })
-
+    revalidatePath('/')
     redirect(`/`)
 }
